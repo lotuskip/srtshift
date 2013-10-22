@@ -62,6 +62,7 @@ void tostr(char *s, const int i) /* put 00 into string as "00" */
 /* shift a time value "00:00:00,000" in s by shift milliseconds */
 void shift_time(char *s, const int shift)
 {
+	int tmp;
 	/* convert string into time in seconds: */
 	long time = 1000*(toint(s)*60*60 /* hours */
 		+ toint(s+3)*60 /* minutes */
@@ -69,8 +70,13 @@ void shift_time(char *s, const int shift)
 		+ toint(s+9)*10 /* split seconds */
 		+ (s[11]-'0') /* 1000ths */
 		+ shift;
+	if(time < 0)
+	{
+		fprintf(stderr, "Warning: resulting timestamp is negative; setting to zero!\n");
+		time = 0;
+	}
 	/* Convert back to string */
-	int tmp = time/(60*60*1000); /* hours*/
+	tmp = time/(60*60*1000); /* hours*/
 	tostr(s, tmp);
 	time -= tmp*60*60*1000;
 	tmp = time/(60*1000); /* minutes */
